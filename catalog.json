@@ -1,0 +1,283 @@
+{
+  "$schema": "./catalog.schema.json",
+  "version": 1,
+  "tools": [
+    {
+      "id": "tool-web-search",
+      "name": "Web Search",
+      "description": "Search the web and return summarized results. Great for answering questions about current events.",
+      "category": "research",
+      "provider": "Brave Search MCP",
+      "icon": "search",
+      "popularity": 95,
+      "mcpServer": {
+        "name": "Brave Search",
+        "transport": "http",
+        "url": "https://mcp.brave.com/search",
+        "isEnabled": true
+      }
+    },
+    {
+      "id": "tool-filesystem",
+      "name": "Filesystem Access",
+      "description": "Read and list files from a sandboxed directory. Lets the agent inspect local documents.",
+      "category": "utilities",
+      "provider": "Filesystem MCP",
+      "icon": "folder",
+      "popularity": 80,
+      "mcpServer": {
+        "name": "Filesystem",
+        "transport": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/"],
+        "isEnabled": true
+      }
+    },
+    {
+      "id": "tool-github",
+      "name": "GitHub",
+      "description": "Search repos, read issues, and create PRs through the GitHub API.",
+      "category": "developer",
+      "provider": "GitHub MCP",
+      "icon": "code",
+      "popularity": 88,
+      "mcpServer": {
+        "name": "GitHub",
+        "transport": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "isEnabled": true
+      }
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-summarizer",
+      "name": "Document Summarizer",
+      "description": "Condense long documents into concise bullet-point summaries with key takeaways.",
+      "category": "productivity",
+      "icon": "summarize",
+      "author": "BizlinAI",
+      "requiredTools": ["tool-filesystem"],
+      "promptTemplate": "You are a summarization expert. Read the provided document and produce: (1) a 3-sentence overview, (2) 5 key bullet points, (3) action items if any. Be concise and faithful to the source."
+    },
+    {
+      "id": "skill-code-reviewer",
+      "name": "Code Reviewer",
+      "description": "Review code changes for bugs, style, and security issues. Outputs structured feedback.",
+      "category": "developer",
+      "icon": "rate_review",
+      "author": "BizlinAI",
+      "requiredTools": ["tool-github"],
+      "promptTemplate": "You are a senior code reviewer. Analyze the given diff and report findings grouped by: Bugs, Security, Style, Suggestions. Reference file:line for each finding. Be specific and constructive."
+    },
+    {
+      "id": "skill-researcher",
+      "name": "Web Researcher",
+      "description": "Research a topic across multiple searches and synthesize a cited report.",
+      "category": "research",
+      "icon": "travel_explore",
+      "author": "BizlinAI",
+      "requiredTools": ["tool-web-search"],
+      "promptTemplate": "You are a research assistant. Break the question into 3-5 sub-queries, search each, then synthesize a report with citations. Flag uncertainty and conflicting sources explicitly."
+    }
+  ],
+  "mcps": [
+    {
+      "id": "mcp-filesystem",
+      "name": "Filesystem MCP",
+      "description": "Official Model Context Protocol server for local filesystem access. Desktop only (stdio).",
+      "category": "utilities",
+      "icon": "folder",
+      "popularity": 90,
+      "server": {
+        "name": "Filesystem MCP",
+        "transport": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/"],
+        "isEnabled": true
+      }
+    },
+    {
+      "id": "mcp-brave-search",
+      "name": "Brave Search MCP",
+      "description": "Web and local search via the Brave Search API. Requires a Brave API key passed in headers.",
+      "category": "research",
+      "icon": "search",
+      "popularity": 85,
+      "server": {
+        "name": "Brave Search MCP",
+        "transport": "http",
+        "url": "https://mcp.brave.com/search",
+        "isEnabled": true
+      }
+    },
+    {
+      "id": "mcp-github",
+      "name": "GitHub MCP",
+      "description": "Interact with GitHub repositories, issues, and pull requests.",
+      "category": "developer",
+      "icon": "code",
+      "popularity": 92,
+      "server": {
+        "name": "GitHub MCP",
+        "transport": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "isEnabled": true
+      }
+    },
+    {
+      "id": "mcp-memory",
+      "name": "Memory MCP",
+      "description": "Persistent key-value memory store so agents can recall context across sessions.",
+      "category": "productivity",
+      "icon": "memory",
+      "popularity": 70,
+      "server": {
+        "name": "Memory MCP",
+        "transport": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-memory"],
+        "isEnabled": true
+      }
+    }
+  ],
+  "providers": [
+    {
+      "id": "provider-openai",
+      "name": "OpenAI",
+      "description": "GPT-4o, GPT-4.1, o-series and more. The reference OpenAI API.",
+      "category": "productivity",
+      "baseUrl": "https://api.openai.com/v1",
+      "defaultModel": "gpt-4o",
+      "website": "https://platform.openai.com",
+      "icon": "cloud",
+      "requiresApiKey": true
+    },
+    {
+      "id": "provider-groq",
+      "name": "Groq",
+      "description": "Ultra-low-latency inference for Llama, Mixtral and Gemma models.",
+      "category": "developer",
+      "baseUrl": "https://api.groq.com/openai/v1",
+      "defaultModel": "llama-3.3-70b-versatile",
+      "website": "https://console.groq.com",
+      "icon": "bolt",
+      "requiresApiKey": true
+    },
+    {
+      "id": "provider-openrouter",
+      "name": "OpenRouter",
+      "description": "Unified gateway to 200+ models from many providers with one key.",
+      "category": "utilities",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "defaultModel": "openai/gpt-4o-mini",
+      "website": "https://openrouter.ai",
+      "icon": "hub",
+      "requiresApiKey": true
+    },
+    {
+      "id": "provider-ollama",
+      "name": "Ollama (local)",
+      "description": "Run models locally via Ollama. No API key required. Use the Ollama discovery page to find models on your network.",
+      "category": "developer",
+      "baseUrl": "http://localhost:11434/v1",
+      "defaultModel": "llama3.2",
+      "website": "https://ollama.com",
+      "icon": "computer",
+      "requiresApiKey": false
+    }
+  ],
+  "models": [
+    {
+      "id": "gemma-2b-it",
+      "displayName": "Gemma 2B IT",
+      "description": "Google Gemma 2B instruct-tuned model. Lightweight, fast, good for general chat on mobile. Requires HuggingFace auth (gated).",
+      "url": "https://huggingface.co/litert-community/gemma-2b-it-gpu-int4/resolve/main/gemma-2b-it-gpu-int4.task",
+      "filename": "gemma-2b-it-gpu-int4.task",
+      "sizeLabel": "1.6 GB",
+      "modelType": "gemmaIt",
+      "fileType": "task",
+      "needsAuth": true,
+      "supportImage": false,
+      "maxTokens": 2048
+    },
+    {
+      "id": "gemma-3n-e2b",
+      "displayName": "Gemma 3 Nano E2B IT",
+      "description": "Google Gemma 3 Nano E2B instruct-tuned. Multimodal (text + image). Requires HuggingFace auth (gated repo).",
+      "url": "https://huggingface.co/google/gemma-3n-E2B-it-litert-preview/resolve/main/gemma-3n-E2B-it-int4.task",
+      "filename": "gemma-3n-E2B-it-int4.task",
+      "sizeLabel": "3.1 GB",
+      "modelType": "gemmaIt",
+      "fileType": "task",
+      "needsAuth": true,
+      "supportImage": true,
+      "maxTokens": 4096
+    },
+    {
+      "id": "gemma-3n-e4b",
+      "displayName": "Gemma 3 Nano E4B IT",
+      "description": "Google Gemma 3 Nano E4B instruct-tuned. Larger, more capable. Multimodal (text + image). Requires HuggingFace auth (gated repo).",
+      "url": "https://huggingface.co/google/gemma-3n-E4B-it-litert-preview/resolve/main/gemma-3n-E4B-it-int4.task",
+      "filename": "gemma-3n-E4B-it-int4.task",
+      "sizeLabel": "6.5 GB",
+      "modelType": "gemmaIt",
+      "fileType": "task",
+      "needsAuth": true,
+      "supportImage": true,
+      "maxTokens": 4096
+    },
+    {
+      "id": "gemma-4-e2b",
+      "displayName": "Gemma 4 E2B IT",
+      "description": "Google Gemma 4 E2B instruct-tuned. Next-gen with thinking mode and function calling. LiteRT-LM format.",
+      "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm",
+      "filename": "gemma-4-E2B-it.litertlm",
+      "sizeLabel": "2.4 GB",
+      "modelType": "gemma4",
+      "fileType": "litertlm",
+      "needsAuth": false,
+      "supportImage": true,
+      "maxTokens": 4096
+    },
+    {
+      "id": "gemma-4-e4b",
+      "displayName": "Gemma 4 E4B IT",
+      "description": "Google Gemma 4 E4B instruct-tuned. Larger next-gen model with thinking mode and function calling. LiteRT-LM format.",
+      "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main/gemma-4-E4B-it.litertlm",
+      "filename": "gemma-4-E4B-it.litertlm",
+      "sizeLabel": "4.3 GB",
+      "modelType": "gemma4",
+      "fileType": "litertlm",
+      "needsAuth": false,
+      "supportImage": true,
+      "maxTokens": 4096
+    },
+    {
+      "id": "deepseek-r1-1.5b",
+      "displayName": "DeepSeek R1 Distill 1.5B",
+      "description": "DeepSeek R1 distilled Qwen 1.5B. Compact reasoning model. LiteRT-LM format.",
+      "url": "https://huggingface.co/litert-community/DeepSeek-R1-Distill-Qwen-1.5B/resolve/main/DeepSeek-R1-Distill-Qwen-1.5B.litertlm",
+      "filename": "DeepSeek-R1-Distill-Qwen-1.5B.litertlm",
+      "sizeLabel": "1.6 GB",
+      "modelType": "deepSeek",
+      "fileType": "litertlm",
+      "needsAuth": false,
+      "supportImage": false,
+      "maxTokens": 2048
+    },
+    {
+      "id": "phi-3-mini",
+      "displayName": "Phi-3 Mini (4K)",
+      "description": "Microsoft Phi-3 Mini 4K instruct. Small but capable model. LiteRT-LM format.",
+      "url": "https://huggingface.co/litert-community/Phi-3-mini-4k-instruct/resolve/main/Phi-3-mini-4k-instruct.litertlm",
+      "filename": "Phi-3-mini-4k-instruct.litertlm",
+      "sizeLabel": "2.2 GB",
+      "modelType": "phi",
+      "fileType": "litertlm",
+      "needsAuth": false,
+      "supportImage": false,
+      "maxTokens": 4096
+    }
+  ]
+}

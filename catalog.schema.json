@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BizlinAI Marketplace Catalog",
+  "type": "object",
+  "required": ["tools", "skills", "mcps", "providers", "models"],
+  "properties": {
+    "version": { "type": "integer", "description": "Catalog schema version" },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/tool" }
+    },
+    "skills": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/skill" }
+    },
+    "mcps": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/mcp" }
+    },
+    "providers": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/provider" }
+    },
+    "models": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/model" }
+    }
+  },
+  "definitions": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "productivity",
+        "developer",
+        "data",
+        "research",
+        "media",
+        "utilities",
+        "communication",
+        "other"
+      ]
+    },
+    "mcpServer": {
+      "type": "object",
+      "required": ["name", "transport"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "transport": { "type": "string", "enum": ["http", "sse", "stdio"] },
+        "url": { "type": "string", "description": "Required for http/sse" },
+        "command": { "type": "string", "description": "Required for stdio" },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "headers": { "type": "object", "additionalProperties": { "type": "string" } },
+        "env": { "type": "object", "additionalProperties": { "type": "string" } },
+        "isEnabled": { "type": "boolean", "default": true }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "required": ["id", "name", "mcpServer"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "$ref": "#/definitions/category" },
+        "provider": { "type": "string" },
+        "mcpServer": { "$ref": "#/definitions/mcpServer" },
+        "icon": { "type": "string", "description": "Material icon name" },
+        "popularity": { "type": "integer" }
+      }
+    },
+    "skill": {
+      "type": "object",
+      "required": ["id", "name", "promptTemplate"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "$ref": "#/definitions/category" },
+        "promptTemplate": { "type": "string" },
+        "requiredTools": { "type": "array", "items": { "type": "string" } },
+        "icon": { "type": "string" },
+        "author": { "type": "string" }
+      }
+    },
+    "mcp": {
+      "type": "object",
+      "required": ["id", "name", "server"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "$ref": "#/definitions/category" },
+        "server": { "$ref": "#/definitions/mcpServer" },
+        "icon": { "type": "string" },
+        "popularity": { "type": "integer" }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "required": ["id", "name", "baseUrl"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "$ref": "#/definitions/category" },
+        "baseUrl": { "type": "string" },
+        "defaultModel": { "type": "string" },
+        "website": { "type": "string" },
+        "icon": { "type": "string" },
+        "requiresApiKey": { "type": "boolean", "default": true }
+      }
+    },
+    "model": {
+      "type": "object",
+      "required": ["id", "displayName", "url", "filename"],
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" },
+        "description": { "type": "string" },
+        "url": { "type": "string", "description": "Direct download URL" },
+        "filename": { "type": "string" },
+        "sizeLabel": { "type": "string" },
+        "modelType": {
+          "type": "string",
+          "enum": ["general", "gemmaIt", "gemma4", "deepSeek", "qwen", "qwen3", "llama", "hammer", "functionGemma", "phi"]
+        },
+        "fileType": {
+          "type": "string",
+          "enum": ["task", "binary", "litertlm", "builtIn"]
+        },
+        "needsAuth": { "type": "boolean", "default": false },
+        "supportImage": { "type": "boolean", "default": false },
+        "maxTokens": { "type": "integer", "default": 2048 },
+        "icon": { "type": "string" }
+      }
+    }
+  }
+}
